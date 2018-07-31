@@ -1,0 +1,11 @@
+###
+
+POST http://box.local/parser/run
+Accept: application/json
+Content-Type: application/json
+
+{
+    "url": "http://theory.phphtml.net/exercises/advanced/php/parsing/poetapnyj-parsing-i-metod-pauka/1/map.php"
+}
+
+###

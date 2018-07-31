@@ -1,0 +1,8 @@
+###
+
+GET http://box.local/admin/blog-chats/21
+Accept: application/json
+Content-Type: application/json
+
+###
+

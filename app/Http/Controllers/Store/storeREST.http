@@ -1,0 +1,28 @@
+###
+GET http://box.local/molehole/store/product/1
+Accept: application/json
+Content-Type: application/json
+###
+
+###
+GET http://box.local/molehole/store/classificator
+Accept: application/json
+Content-Type: application/json
+###
+
+###
+GET http://box.local/molehole/store/category
+Accept: application/json
+Content-Type: application/json
+###
+
+###
+POST http://box.local/molehole/store/
+Accept: application/json
+Content-Type: application/json
+
+{
+  "url": "http://theory.phphtml.net/exercises/advanced/php/parsing/poetapnyj-parsing-i-metod-pauka/1/map.php"
+}
+
+###
