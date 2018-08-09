@@ -30,6 +30,10 @@ export default {
     commit('putProductToBasket', outProduct)
   },
 
+  clearProductBasket({commit}){
+    commit('clearProductBasket')
+  },
+
   loadBasket({commit}){
     let bsk = JSON.parse(localStorage.getItem("basket"));
     if (bsk) {
@@ -41,14 +45,24 @@ export default {
     }
   },
 
-  addClient({commit}, newClient){
-    let clnt = newClient
-    axios.post("/molehole/store/addclient", newClient)
+  /**
+   *
+   * @param commit
+   * @param newInvoice
+   * returning:
+   data: {
+    "result": true,
+    "invoice_id": 5,
+    "client_id": 33,
+    "nick_name": 749091,
+    "psw": 6184
+}
+   */
+  saveInvoice({commit}, newInvoice){
+    axios.post("/molehole/store/saveInvoice", newInvoice)
       .then(function(r){
-        clnt.id = r.data.id;
+        commit('putSaveResult', r.data);
         // console.log('data: '+JSON.stringify(r.data, '', 4) );
-        // console.log('clnt: '+JSON.stringify(clnt, '', 4) );
-        commit('putNewClient', newClient)
       })
       .catch(function(r){
         console.log('ERROR: '+r)

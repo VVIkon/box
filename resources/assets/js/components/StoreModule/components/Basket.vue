@@ -1,7 +1,24 @@
 <template>
     <v-app id="basket">
         <v-layout row justify-center>
-            <v-card>
+            <v-alert
+                    v-show="showAlertPanel"
+                    :value="true"
+                    type="success"
+                    class="save-result-alert"
+            >
+                <h4>Заказ № {{saveResult.invoice_number}} создан</h4>
+                <span>
+                    Для отслеживания состояния заказа воспользуйтесь личным кабинетом.
+                </span>
+                <p>
+                    Логин: {{saveResult.nick_name}} пароль:{{saveResult.psw}}
+                </p>
+
+                <v-btn color="success" @click="clearBasket">Ok</v-btn>
+            </v-alert>
+
+            <v-card v-show="!showAlertPanel">
                 <v-card-title class="headline grey lighten-2">Корзина покупок</v-card-title>
                 <v-container fluid grid-list-xl>
                     <v-data-table
@@ -24,7 +41,10 @@
                 <v-card-actions>
                     <v-spacer></v-spacer>
                     <!--<v-btn color="green darken-1" flat @click.native="toBuy">Оформить</v-btn>-->
-                    <buy-btn></buy-btn>
+                    <buy-btn
+                      :total="totalPrice"
+                      :basket="basket"
+                    ></buy-btn>
                 </v-card-actions>
             </v-card>
         </v-layout>
@@ -44,12 +64,14 @@
           { text: 'Количество', value: 'kolvo' },
           { text: 'Цена',       value: 'price' },
           { text: 'Сумма',      value: 'total' }
-        ]
+        ],
+        showAlertPanel:false
       }
     },
     components:{
         'buy-btn': buyBtn
     },
+
     computed: {
       // [
       //   {"productId":2,"productName":"Римская (Маленькая)","complectId":3,"kolvo":3,"price":530,"total":1590},
@@ -59,6 +81,10 @@
         return this.$store.state.basket;
       },
 
+      saveResult() {
+        return this.$store.state.saveResult;
+      },
+
       totalPrice(){
         let pr = 0;
         this.basket.map(function(itm, ind){
@@ -66,16 +92,32 @@
         });
         return pr;
       }
+    },
+    methods:{
+      clearBasket(){
+        localStorage.removeItem("basket");
+        this.$store.dispatch("clearProductBasket");
+      }
+    },
+
+    watch:{
+      saveResult(newState){
+        //console.log('state: '+JSON.stringify(newState,'',4));
+        if (newState.result){
+          this.showAlertPanel = true;
+          // console.log('showAlertPanel: '+this.showAlertPanel);
+
+        }
+      }
+
     }
-    // methods:{
-    //   toBuy(){
-    //     console.log('basket: '+JSON.stringify(this.basket) );
-    //   }
-    // }
 
   }
 </script>
 
 <style scoped>
+    .save-result-alert{
+        height: 200px;
+    }
 
 </style>

@@ -86,6 +86,36 @@
                                     ></v-text-field>
                                 </v-flex>
                                 <v-flex xs12>
+                                    <v-menu
+                                            ref="menu"
+                                            :close-on-content-click="false"
+                                            v-model="menu"
+                                            :nudge-right="40"
+                                            :return-value.sync="delivery"
+                                            lazy
+                                            transition="scale-transition"
+                                            offset-y
+                                            full-width
+                                            min-width="290px"
+
+                                    >
+                                        <v-text-field
+                                                slot="activator"
+                                                label="Дата доставки"
+                                                hint="MM.DD.YYYY формат"
+                                                v-model="computedDateFormatted"
+                                                prepend-icon="event"
+                                                readonly
+                                        ></v-text-field>
+                                        <v-date-picker
+                                                v-model="delivery"
+                                                locale="ru-ru"
+                                                @input="$refs.menu.save(delivery)"
+                                        ></v-date-picker>
+
+                                    </v-menu>
+                                </v-flex>
+                                <v-flex xs12>
                                     <v-textarea
                                             class="user-input"
                                             v-model="comment"
@@ -115,6 +145,7 @@
 <script>
   export default {
     name: "BuyBtn",
+    props:["total", "basket"],
     data (){
       return {
         dialog: false,
@@ -126,11 +157,12 @@
         phone: null,
         nick_name: null,
         psw: null,
+        delivery:null,
+        menu: false,
         comment: null,
         showPsw: false,
         errorMessages: '',
-        formHasErrors: false,
-
+        formHasErrors: false
       }
     },
     computed: {
@@ -141,6 +173,9 @@
           phone: this.phone,
           address: this.address
         }
+      },
+      computedDateFormatted(){
+        return this.formatDate(this.delivery)
       }
     },
 
@@ -159,23 +194,52 @@
         if (this.formHasErrors){
             console.log('Ошибка валидации');
         }else{
-          let clientId = this.$store.state.clients.id ? this.$store.state.clients.id : null
-            let newClient = {
-              id: clientId,
-              fio: this.fio,
-              email: this.email,
-              phone: this.phone,
-              address: this.address,
-              nick_name: this.nick_name,
-              psw: this.psw,
-              comment:null
+          let clientId = this.$store.state.clients.id ? this.$store.state.clients.id : null;
+            let newInvoice = {
+              client: {
+                id: clientId,
+                fio: this.fio,
+                email: this.email,
+                phone: this.phone,
+                address: this.address,
+                nick_name: this.nick_name ? this.nick_name : '_'+ _.random(100000, 999999),
+                psw: this.psw ? this.psw : _.random(1000, 9999),
+                comment:null
+              },
+              invoice: {
+                id: null,
+                invoice_number: this.formatDate(this.delivery,2)+'/'+_.random(1,1000),
+                client_id: null,
+                operation_id: 1,
+                status_id: 0,
+                total: this.total ? this.total : 0,
+                delivery_date: this.computedDateFormatted,
+                delivery_address: this.address,
+                comment: this.comment,
+                basket: this.basket
+              }
+
             };
-            this.$store.dispatch("addClient",  newClient);
-            console.log('client saved');
+            this.$store.dispatch("saveInvoice",  newInvoice);
+            console.log('invoice created');
+
             this.dialog = false;
         }
 
-      }
+      },
+
+      formatDate (date, format = 0) {
+        if (!date) return null;
+        const [year, month, day] = date.split('-');
+        if (format ===0){
+            return `${day.padStart(2, '0')}.${month.padStart(2, '0')}.${year}`;
+        }else if(format ===1){
+          return `${day.padStart(2, '0')}/${month.padStart(2, '0')}/${year}`;
+        }else if(format ===2){
+          return `${year}-${month.padStart(2, '0')}${day.padStart(2, '0')}`;
+        }
+      },
+
     },
     watch: {
       fio () {

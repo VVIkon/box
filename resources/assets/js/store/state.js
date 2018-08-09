@@ -3,7 +3,8 @@ export default {
   products: [],
   selectedComplect: [],
   basket: [],
-  clients:[]
+  clients:[],
+  saveResult: []
 
 
 

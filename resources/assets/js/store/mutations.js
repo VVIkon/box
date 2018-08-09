@@ -26,10 +26,18 @@ export default {
   putProductToBasket(state, payload){
       state.basket.push(payload);
   },
+  clearProductBasket(state){
+      state.basket=[];
+  },
 
   putNewClient(state, payload){
     state.clients = payload;
   },
+
+  putSaveResult(state, payload){
+    state.saveResult = payload;
+  },
+
 
 
 
